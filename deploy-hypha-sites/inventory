@@ -1,0 +1,8 @@
+[local]
+localhost ansible_connection=local
+
+[webserver]
+proxy ansible_host=web1.hypha.coop ansible_connection=ssh ansible_ssh_user=sysadmin
+
+[backend]
+backend ansible_host=10.0.1.4 ansible_connection=ssh ansible_ssh_user=sysadmin

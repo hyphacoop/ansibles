@@ -1,0 +1,3 @@
+---
+letsencrypt_email: infra@hypha.coop
+staging_env: false # If true iwe will use Let's Encrypt staging certs, put in staging network

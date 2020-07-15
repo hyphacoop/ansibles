@@ -1,0 +1,186 @@
+---
+- name: Clone VM (production)
+  proxmox_kvm:
+    api_user: "{{ api_user }}"
+    api_password: "{{ api_password }}"
+    api_host: "{{ api_host }}"
+
+    clone: "{{ clone }}"
+    newid: "{{ vm_id }}"
+    full: true
+    name: "{{ vm_name }}"
+    node: "{{ node }}"
+    storage: "{{ storage }}"
+    format: qcow2
+  register: clone_vm
+  when: not staging_env
+
+- name: Clone VM (staging)
+  proxmox_kvm:
+    api_user: "{{ api_user }}"
+    api_password: "{{ api_password }}"
+    api_host: "{{ api_host }}"
+
+    clone: "{{ clone }}"
+    newid: "{{ vm_id_staging }}"
+    full: true
+    name: "{{ vm_name_staging }}"
+    node: "{{ node }}"
+    storage: "{{ storage }}"
+    format: qcow2
+  register: clone_vm_staging
+  when: staging_env
+
+- name: Waiting for Clone to finish
+  pause:
+    seconds: 10
+  when: clone_vm.changed or clone_vm_staging.changed
+
+- name: Configure VM (production)
+  proxmox_kvm:
+    api_user: "{{ api_user }}"
+    api_password: "{{ api_password }}"
+    api_host: "{{ api_host }}"
+    node: "{{ node }}"
+    name: "{{ vm_name }}"
+    cpu: "{{ vm_cpu }}"
+    cores: "{{ vm_cores }}"
+    cpuunits: "{{ vm_cpuunits }}"
+    memory: "{{ vm_ram }}"
+    update: true
+  when: not staging_env
+
+- name: Configure VM (staging)
+  proxmox_kvm:
+    api_user: "{{ api_user }}"
+    api_password: "{{ api_password }}"
+    api_host: "{{ api_host }}"
+    node: "{{ node }}"
+    name: "{{ vm_name_staging }}"
+    cpu: "{{ vm_cpu_staging }}"
+    cores: "{{ vm_cores_staging }}"
+    cpuunits: "{{ vm_cpuunits_staging }}"
+    memory: "{{ vm_ram_staging }}"
+    update: true
+  when: staging_env
+
+- name: Auth using API
+  uri:
+    validate_certs: false
+    url: "https://{{ api_host }}:8006/api2/json/access/ticket"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      username: "{{ api_user }}"
+      password: "{{ api_password }}"
+  register: auth
+
+- name: Resize disk using API (production)
+  uri:
+    validate_certs: false
+    url: "https://{{ api_host }}:8006/api2/json/nodes/{{ node }}/qemu/{{ vm_id }}/resize"
+    method: PUT
+    headers: 
+      Cookie: "PVEAuthCookie={{ auth.json.data.ticket }}"
+      CSRFPreventionToken: "{{ auth.json.data.CSRFPreventionToken }}"
+    body_format: form-urlencoded
+    body:
+      disk: virtio0
+      size: "{{ vm_disk }}"
+  register: vm_resize
+  retries: 10
+  until: vm_resize is success
+  when: not staging_env
+
+- name: Resize disk using API (staging)
+  uri:
+    validate_certs: false
+    url: "https://{{ api_host }}:8006/api2/json/nodes/{{ node }}/qemu/{{ vm_id_staging }}/resize"
+    method: PUT
+    headers: 
+      Cookie: "PVEAuthCookie={{ auth.json.data.ticket }}"
+      CSRFPreventionToken: "{{ auth.json.data.CSRFPreventionToken }}"
+    body_format: form-urlencoded
+    body:
+      disk: virtio0
+      size: "{{ vm_disk_staging }}"
+  register: vm_resize
+  retries: 10
+  until: vm_resize is success
+  when: staging_env
+
+- name: Set cloud-init config using API (production)
+  uri:
+    validate_certs: false
+    url: "https://{{ api_host }}:8006/api2/json/nodes/{{ node }}/qemu/{{ vm_id }}/config"
+    method: POST
+    headers:
+      Cookie: "PVEAuthCookie={{ auth.json.data.ticket }}"
+      CSRFPreventionToken: "{{ auth.json.data.CSRFPreventionToken }}"
+    body_format: form-urlencoded
+    body:
+      nameserver: "{{ nameserver }}"
+      searchdomain: "{{ search_domain }}"
+      ciuser: "{{ vm_username }}"
+      net0: "virtio={{ vm_mac_0 }},bridge={{ vm_bridge_0 }}"
+      ipconfig0: "gw={{ vm_gw4_0 }},ip={{ vm_ip4_0 }}"
+      sshkeys: "{{ lookup('file', vm_sshkey_file ) | urlencode | replace('/','%2F') }}"
+      onboot: "1"
+  when: not staging_env
+
+- name: Set cloud-init config using API (staging)
+  uri:
+    validate_certs: false
+    url: "https://{{ api_host }}:8006/api2/json/nodes/{{ node }}/qemu/{{ vm_id_staging }}/config"
+    method: POST
+    headers:
+      Cookie: "PVEAuthCookie={{ auth.json.data.ticket }}"
+      CSRFPreventionToken: "{{ auth.json.data.CSRFPreventionToken }}"
+    body_format: form-urlencoded
+    body:
+      nameserver: "{{ nameserver_staging }}"
+      searchdomain: "{{ search_domain_staging }}"
+      ciuser: "{{ vm_username_staging }}"
+      net0: "virtio={{ vm_mac_0_staging }},bridge={{ vm_bridge_0_staging }}"
+      ipconfig0: "gw={{ vm_gw4_0_staging }},ip={{ vm_ip4_0_staging }}"
+      sshkeys: "{{ lookup('file', vm_sshkey_file ) | urlencode | replace('/','%2F') }}"
+      onboot: "0"
+  when: staging_env
+
+- name: Start VM (production)
+  proxmox_kvm:
+    api_user: "{{ api_user }}"
+    api_password: "{{ api_password }}"
+    api_host: "{{ api_host }}"
+    node: "{{ node }}"
+    name: "{{ vm_name }}"
+    state: started
+  register: start_vm
+  when: not staging_env
+
+- name: Start VM (staging)
+  proxmox_kvm:
+    api_user: "{{ api_user }}"
+    api_password: "{{ api_password }}"
+    api_host: "{{ api_host }}"
+    node: "{{ node }}"
+    name: "{{ vm_name_staging }}"
+    state: started
+  register: start_vm_staging
+  when: staging_env
+
+- name: Wait for SSH to be ready {{ vm_ip4_0.split('/')[0] }} (production)
+  wait_for:
+    port: 22
+    host: "{{ vm_ip4_0.split('/')[0] }}"
+    search_regex: OpenSSH
+    delay: 10
+  when: start_vm.changed
+
+- name: Wait for SSH to be ready {{ vm_ip4_0_staging.split('/')[0] }} (staging)
+  wait_for:
+    port: 22
+    host: "{{ vm_ip4_0_staging.split('/')[0] }}"
+    search_regex: OpenSSH
+    delay: 10
+  when: start_vm_staging.changed

@@ -1,0 +1,33 @@
+
+- name: Set staging vars
+  set_fact:
+    site_hostname: "{{ site_hostname_staging }}"
+    proxy: "{{ proxy_staging }}"
+  when: staging_env|bool
+
+
+- name: Configure nginx {{ site_hostname }}
+  template:
+    src: link.hypha.coop.j2
+    dest: /etc/nginx/sites-available/{{ site_hostname }}
+    owner: root
+    group: root
+
+- name: Create /var/www/{{ site_hostname }}
+  file:
+    path: /var/www/{{ site_hostname }}
+    state: directory
+    owner: deploy
+    group: users
+    mode: '0755'
+
+- name: Enabling {{ site_hostname }} nginx config
+  file:
+    src: /etc/nginx/sites-available/{{ site_hostname }}
+    dest: /etc/nginx/sites-enabled/{{ site_hostname }}
+    state: link
+
+- name: Reload nginx
+  systemd:
+    state: reloaded
+    name: nginx

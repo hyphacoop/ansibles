@@ -1,0 +1,29 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: true
+
+- name: Install nginx packages
+  apt:
+    pkg:
+      - nginx
+      - certbot
+      - php-fpm
+
+- name: Install php.ini config file
+  copy: 
+    src: php.ini
+    dest: /etc/php/7.3/fpm/php.ini
+  register: php_config
+
+- name: Reload nginx
+  systemd:
+    state: restarted
+    name: php7.3-fpm
+  when: php_config.changed
+
+- name: Create deploy user
+  user:
+    name: deploy
+    comment: Deploy CI user
+    group: users

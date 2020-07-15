@@ -1,0 +1,6 @@
+---
+staging_env: false # If true we will use Let's Encrypt staging certs, put in staging network
+site_hostname: hypha.coop # Without the www part
+proxy: '10.0.2.3'
+site_hostname_staging: staging.hypha.coop # Without the www part
+proxy_staging: '10.0.2.3'

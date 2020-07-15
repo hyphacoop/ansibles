@@ -1,0 +1,6 @@
+[local]
+localhost ansible_connection=local
+
+[webserver]
+web1 ansible_host=web1.hypha.coop ansible_connection=ssh ansible_ssh_user=sysadmin
+

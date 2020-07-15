@@ -1,0 +1,24 @@
+server {
+	listen 80;
+	server_name  {{ site_hostname }};
+	set_real_ip_from   10.0.1.3;
+	set_real_ip_from   10.0.2.3;
+	real_ip_header     X-Real-IP;
+	access_log  /var/log/nginx/{{ site_hostname }}_access.log;
+	error_log   /var/log/nginx/{{ site_hostname }}_error.log;
+	root   /var/www/{{ site_hostname }};
+	index redir.php index.php index.html index.htm;
+	# Rewrite to redir.php
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		try_files $uri $uri/ =404;
+		rewrite ^/(.*)$ /redir.php?link=$1 last;
+	}
+	# pass PHP scripts to FastCGI server
+	#
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
+	}
+}

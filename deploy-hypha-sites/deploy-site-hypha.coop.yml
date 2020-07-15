@@ -1,0 +1,10 @@
+---
+- hosts: backend
+  become: yes
+  roles:
+    - site-hypha.coop-config-webserver
+
+- hosts: webserver
+  become: yes
+  roles:
+    - site-hypha.coop-config-proxy
