@@ -1,0 +1,6 @@
+[local]
+localhost ansible_connection=local
+
+[mailman]
+lists ansible_host=lists.hypha.coop ansible_connection=ssh ansible_ssh_user=sysadmin
+

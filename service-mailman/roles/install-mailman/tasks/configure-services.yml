@@ -1,0 +1,100 @@
+---
+- name: Link Apache Mailman config
+  file:
+    src: /etc/mailman/apache.conf
+    dest: /etc/apache2/sites-available/mailman.conf
+    state: link
+
+- name: Enable Mailman site Apache config
+  command: a2ensite mailman.conf
+  args:
+    creates: /etc/apache2/sites-enabled/mailman.conf
+
+- name: Enable Apache cgid module
+  command: a2enmod cgid
+  args:
+      creates: /etc/apache2/mods-enabled/cgid.conf
+
+- name: Enable Apache headers module
+  command: a2enmod headers
+  args:
+      creates: /etc/apache2/mods-enabled/headers.load
+
+- name: Reload Apache2
+  systemd:
+    state: reloaded
+    name: apache2
+
+- name: Installing new /etc/mailman/mm_cfg.py
+  template:
+    src: mm_cfg.py.j2
+    dest: /etc/mailman/mm_cfg.py
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+
+- name: Installing new /etc/postfix/transport
+  template:
+    src: transport.j2
+    dest: /etc/postfix/transport
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+
+- name: Set Postfix relay_domains
+  command: postconf -e 'relay_domains = {{ ansible_host }}'
+
+- name: Set Postfix transport_maps
+  command: postconf -e 'transport_maps = hash:/etc/postfix/transport'
+
+- name: Set Postfix mailman_destination_recipient_limit
+  command: postconf -e 'mailman_destination_recipient_limit = 1'
+
+- name: Set Postfix alias_maps
+  command: postconf -e 'alias_maps = hash:/etc/aliases, hash:/var/lib/mailman/data/aliases'
+
+- name: Running postmap -v /etc/postfix/transport
+  command: postmap -v /etc/postfix/transport
+
+- name: Installing new /etc/aliases 
+  copy:
+    src: aliases
+    dest: /etc/aliases
+    owner: root
+    group: list
+    mode: '0644'
+    backup: yes
+
+- name: Running newaliases
+  command: newaliases
+
+- name: Restart Postfix
+  systemd:
+    state: restarted
+    name: postfix
+
+- name: Enable Apache SSL module
+  command: a2enmod ssl
+  args:
+      creates: /etc/apache2/mods-enabled/ssl.conf
+
+- name: Installing new /etc/apache2/sites-enabled/000-default.conf
+  template:
+    src: 000-default.conf.j2
+    dest: /etc/apache2/sites-enabled/000-default.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+
+- name: Installing index.html
+  copy:
+    src: index.html
+    dest: /var/www/html/index.html
+
+- name: Restart Apache
+  systemd:
+    state: restarted
+    name: apache2
