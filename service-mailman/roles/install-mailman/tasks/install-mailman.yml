@@ -1,0 +1,16 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: true
+
+- name: Install Mailman packages
+  apt:
+    pkg:
+      - mailman
+
+- name: Set Mailman language
+  debconf: 
+    name=mailman
+    question="mailman/site_languages"
+    value="'en'"
+    vtype="string"
