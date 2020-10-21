@@ -1,4 +1,4 @@
-# deploy Hypha sites
+# Deploy Hypha sites
 
 To deploy websites we first need to provision `bw1` (backend web server 1) which will host our websites.
 
