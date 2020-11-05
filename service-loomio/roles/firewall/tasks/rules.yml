@@ -31,7 +31,7 @@
     jump: ACCEPT
   with_items: "{{ ipv6_admin_subs }}"
 
-- name: ip6tables Allow nginx TCP 443
+- name: ip6tables Allow Loomio TCP 443
   iptables:
     ip_version: ipv6
     chain: INPUT
@@ -40,7 +40,7 @@
     destination_port: "443"
     jump: ACCEPT
 
-- name: ip6tables Allow nginx TCP 80
+- name: ip6tables Allow Loomio TCP 80
   iptables:
     ip_version: ipv6
     chain: INPUT
@@ -49,7 +49,7 @@
     destination_port: "80"
     jump: ACCEPT
 
-- name: iptables Allow nginx TCP 25
+- name: iptables Allow Loomio SMTP TCP 25
   iptables:
     ip_version: ipv6
     chain: INPUT
@@ -114,7 +114,7 @@
     jump: ACCEPT
   with_items: "{{ ipv4_admin_subs }}"
 
-- name: iptables Allow nginx TCP 443
+- name: iptables Allow Loomio TCP 443
   iptables:
     ip_version: ipv4
     chain: INPUT
@@ -123,7 +123,7 @@
     destination_port: "443"
     jump: ACCEPT
 
-- name: iptables Allow nginx TCP 80
+- name: iptables Allow Loomio TCP 80
   iptables:
     ip_version: ipv4
     chain: INPUT
@@ -132,7 +132,7 @@
     destination_port: "80"
     jump: ACCEPT
 
-- name: iptables Allow nginx TCP 25
+- name: iptables Allow Loomio SMTP TCP 25
   iptables:
     ip_version: ipv4
     chain: INPUT
