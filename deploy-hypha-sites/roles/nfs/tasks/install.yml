@@ -1,0 +1,32 @@
+---
+
+- name: Upgrade the system
+  apt:
+    update_cache: true
+    upgrade: dist
+  register: apt_cache
+  retries: 50
+  until: apt_cache is success
+
+- name: Install NFS packages
+  apt:
+    pkg:
+      - nfs-common
+
+- name: Mount production NFS volume /media/storage
+  ansible.posix.mount:
+    src: 192.168.1.2:/mnt/storage/prod/bw1.hypha.coop
+    path: /media/storage
+    opts: rw,soft,x-systemd.automount
+    state: mounted
+    fstype: nfs
+  when: not staging_env
+
+- name: Mount staging NFS volume /media/storage
+  ansible.posix.mount:
+    src: 192.168.1.2:/mnt/storage/staging/bw1.hypha.coop
+    path: /media/storage
+    opts: rw,soft,x-systemd.automount
+    state: mounted
+    fstype: nfs
+  when: staging_env
