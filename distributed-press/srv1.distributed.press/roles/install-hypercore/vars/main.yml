@@ -1,5 +1,4 @@
 ---
-letsencrypt_email: infra@hypha.coop
 dat_username: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           39643335386336323937626439386639396333376562303464313835353232303634666233313162

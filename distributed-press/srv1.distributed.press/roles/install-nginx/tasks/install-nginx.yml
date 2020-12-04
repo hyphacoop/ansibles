@@ -24,7 +24,7 @@
     state: directory
 
 - name: Generate DH parameters
-  shell: openssl dhparam -writerand - 1024 > /etc/ssl/dhparam.pem
+  shell: openssl dhparam -writerand - 4096 > /etc/ssl/dhparam.pem
   args:
     chdir: /etc/nginx/ssl
     creates: /etc/ssl/dhparam.pem
