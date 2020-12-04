@@ -1,0 +1,63 @@
+---
+- name: Add nodejs repo key
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    state: present
+
+- name: Add nodejs repo
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_15.x buster main"
+    filename: nodesource
+    state: present
+
+- name: Install nodejs
+  apt:
+    update_cache: true
+    pkg:
+      - nodejs
+      - screen
+      - git
+
+- name: git clone https://github.com/hyphacoop/distributed-press-organizing.git
+  become_user: compost
+  git:
+    repo: 'https://github.com/hyphacoop/api.distributed.press.git'
+    dest: '/home/compost/api.distributed.press'
+    clone: yes
+    update: no
+
+- name: Check if db.json exists
+  stat:
+    path: /home/compost/api.distributed.press/db.json
+  register: db_exists
+
+- name: Copy db.json /home/compost/api.distributed.press/
+  template:
+    src: db.json
+    dest: /home/compost/api.distributed.press/db.json
+    owner: compost
+    group: users
+    mode: 0600
+  when: db_exists.stat.exists == false
+
+- name: Install API using npm
+  become_user: compost
+  shell: npm install
+  args:
+    chdir: /home/compost/api.distributed.press
+
+- name: Install distributed-api systemd service
+  template:
+    src: distributed-api.service.j2
+    dest: /etc/systemd/system/distributed-api.service
+    mode: 0644
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start distributed-api service
+  systemd:
+    name: distributed-api
+    enabled: yes
+    state: started

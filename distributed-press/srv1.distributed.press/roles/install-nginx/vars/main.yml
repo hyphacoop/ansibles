@@ -1,0 +1,3 @@
+---
+letsencrypt_email: infra@hypha.coop
+letsencrypt_staging: false

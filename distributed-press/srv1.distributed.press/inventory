@@ -1,0 +1,6 @@
+[local]
+localhost ansible_connection=local
+
+[webserver]
+srv1 ansible_host=srv1.distributed.press ansible_connection=ssh ansible_ssh_user=sysadmin
+
