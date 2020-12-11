@@ -34,7 +34,7 @@
     state: directory
     mode: '0700'
 
-- name: Check if API db.json exists
+- name: Check if API config.json exists
   stat:
     path: /home/compost/api.distributed.press/data/config.json
   register: config_exists
