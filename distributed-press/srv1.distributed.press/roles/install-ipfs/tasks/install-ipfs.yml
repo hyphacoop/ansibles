@@ -1,0 +1,47 @@
+---
+- name: Get latest IPFS version
+  uri:
+    url: https://api.github.com/repos/ipfs/go-ipfs/releases/latest
+    return_content: true
+  register: json_reponse
+
+- name: Download and Extract /tmp/ipfs.tar.gz /tmp/ipfs
+  unarchive:
+    src: https://github.com/ipfs/go-ipfs/releases/download/{{ json_reponse.json.tag_name }}/go-ipfs_{{ json_reponse.json.tag_name }}_linux-amd64.tar.gz
+    dest: /tmp/
+    remote_src: yes
+
+- name: Install IPFS to /usr/local/bin
+  copy:
+    src: /tmp/go-ipfs/ipfs
+    dest: /usr/local/bin/ipfs
+    remote_src: yes
+    mode: 0755
+
+- name: Delete extracted files
+  file:
+    state: absent
+    path: /tmp/go-ipfs
+
+- name: Init IPFS
+  become_user: compost
+  shell: ipfs init
+  args:
+    chdir: /home/compost
+    creates: /home/compost/.ipfs
+
+- name: Install IPFS systemd service
+  copy:
+    src: ipfs.service
+    dest: /etc/systemd/system/ipfs.service
+    mode: 0644
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start IPFS service
+  systemd:
+    name: ipfs
+    enabled: yes
+    state: started

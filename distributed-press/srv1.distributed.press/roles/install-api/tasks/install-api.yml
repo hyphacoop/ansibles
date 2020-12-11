@@ -1,0 +1,89 @@
+---
+- name: Add nodejs repo key
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    state: present
+
+- name: Add nodejs repo
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_15.x buster main"
+    filename: nodesource
+    state: present
+
+- name: Install nodejs
+  apt:
+    update_cache: true
+    pkg:
+      - nodejs
+      - screen
+      - git
+
+- name: git clone https://github.com/hyphacoop/api.distributed.press.git
+  become_user: compost
+  git:
+    repo: 'https://github.com/hyphacoop/api.distributed.press.git'
+    dest: '/home/compost/api.distributed.press'
+    clone: yes
+    update: no
+
+- name: Create Data directory if doesn't exists
+  file:
+    path: /home/compost/api.distributed.press/data
+    owner: compost
+    group: users
+    state: directory
+    mode: '0700'
+
+- name: Check if API config.json exists
+  stat:
+    path: /home/compost/api.distributed.press/data/config.json
+  register: config_exists
+
+- name: Copy config.json /home/compost/api.distributed.press/
+  template:
+    src: config.json
+    dest: /home/compost/api.distributed.press/data/config.json
+    owner: compost
+    group: users
+    mode: 0600
+  when: config_exists.stat.exists == false
+
+- name: Install Distributed API using npm
+  become_user: compost
+  shell: npm install
+  args:
+    chdir: /home/compost/api.distributed.press/api
+
+- name: Install Distributed Backend using npm
+  become_user: compost
+  shell: npm install
+  args:
+    chdir: /home/compost/api.distributed.press/backend
+
+- name: Install distributed-api systemd service
+  template:
+    src: distributed-api.service.j2
+    dest: /etc/systemd/system/distributed-api.service
+    mode: 0644
+
+- name: Install distributed-backend systemd service
+  template:
+    src: distributed-backend.service.j2
+    dest: /etc/systemd/system/distributed-backend.service
+    mode: 0644
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start distributed-api service
+  systemd:
+    name: distributed-api
+    enabled: yes
+    state: started
+
+- name: Enable and start distributed-backend service
+  systemd:
+    name: distributed-backend
+    enabled: yes
+    state: started

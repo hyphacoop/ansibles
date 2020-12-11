@@ -1,0 +1,14 @@
+[Unit]
+Description=Dat storage provider, keeps dats alive in the background.
+
+[Service]
+User=compost
+group=users
+Type=simple
+# Check that dat-store is present at this location
+# If it's not, replace the path with its location
+ExecStart=/usr/bin/dat-store run-service --port 3472 --authorization-username {{ dat_username }} --authorization-password {{ dat_password }}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
