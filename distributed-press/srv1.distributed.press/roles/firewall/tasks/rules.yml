@@ -58,6 +58,24 @@
     destination_port: "5001"
     jump: ACCEPT
 
+- name: ip6tables Allow Hyperswarm TCP 42666
+  iptables:
+    ip_version: ipv6
+    chain: INPUT
+    protocol: tcp
+    in_interface: eth0
+    destination_port: "42666"
+    jump: ACCEPT
+
+- name: ip6tables Allow Hyperswarm UDP 42666
+  iptables:
+    ip_version: ipv6
+    chain: INPUT
+    protocol: udp
+    in_interface: eth0
+    destination_port: "42666"
+    jump: ACCEPT
+
 - name: ip6tables Allow ESTABLISHED RELATED
   iptables:
     ip_version: ipv6
@@ -138,6 +156,24 @@
     protocol: tcp
     in_interface: eth0
     destination_port: "5001"
+    jump: ACCEPT
+
+- name: iptables Allow Hyperswarm TCP 42666
+  iptables:
+    ip_version: ipv4
+    chain: INPUT
+    protocol: tcp
+    in_interface: eth0
+    destination_port: "42666"
+    jump: ACCEPT
+
+- name: iptables Allow Hyperswarm UDP 42666
+  iptables:
+    ip_version: ipv4
+    chain: INPUT
+    protocol: udp
+    in_interface: eth0
+    destination_port: "42666"
     jump: ACCEPT
 
 - name: iptables Allow ESTABLISHED RELATED
