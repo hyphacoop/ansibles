@@ -72,6 +72,12 @@
     dest: /etc/systemd/system/distributed-backend.service
     mode: 0644
 
+- name: Install distributed-pinning systemd service
+  template:
+    src: distributed-pinning.service.j2
+    dest: /etc/systemd/system/distributed-pinning.service
+    mode: 0644
+
 - name: Reload systemd daemon
   systemd:
     daemon_reload: yes
@@ -85,5 +91,11 @@
 - name: Enable and start distributed-backend service
   systemd:
     name: distributed-backend
+    enabled: yes
+    state: started
+
+- name: Enable and start distributed-pinning service
+  systemd:
+    name: distributed-pinning
     enabled: yes
     state: started
