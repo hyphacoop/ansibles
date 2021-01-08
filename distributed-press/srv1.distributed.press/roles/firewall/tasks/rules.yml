@@ -49,13 +49,13 @@
     destination_port: "80"
     jump: ACCEPT
 
-- name: ip6tables Allow IPFS TCP 5001
+- name: ip6tables Allow IPFS TCP 4001
   iptables:
     ip_version: ipv6
     chain: INPUT
     protocol: tcp
     in_interface: eth0
-    destination_port: "5001"
+    destination_port: "4001"
     jump: ACCEPT
 
 - name: ip6tables Allow Hyperswarm TCP 42666
@@ -149,13 +149,13 @@
     destination_port: "80"
     jump: ACCEPT
 
-- name: iptables Allow IPFS TCP 5001
+- name: iptables Allow IPFS TCP 4001
   iptables:
     ip_version: ipv4
     chain: INPUT
     protocol: tcp
     in_interface: eth0
-    destination_port: "5001"
+    destination_port: "4001"
     jump: ACCEPT
 
 - name: iptables Allow Hyperswarm TCP 42666
