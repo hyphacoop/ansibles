@@ -36,9 +36,9 @@
   timezone:
     name: America/Toronto
 
-- name: Create compost user
+- name: Create press user
   user:
-    name: compost
+    name: press
     shell: /bin/bash
     group: users
     append: no
