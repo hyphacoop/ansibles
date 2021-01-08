@@ -24,11 +24,11 @@
     path: /tmp/go-ipfs
 
 - name: Init IPFS
-  become_user: compost
+  become_user: press
   shell: ipfs init
   args:
-    chdir: /home/compost
-    creates: /home/compost/.ipfs
+    chdir: /home/press
+    creates: /home/press/.ipfs
 
 - name: Install IPFS systemd service
   copy:
