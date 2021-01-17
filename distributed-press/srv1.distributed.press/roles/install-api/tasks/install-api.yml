@@ -28,7 +28,15 @@
 
 - name: Create Data directory if doesn't exists
   file:
-    path: /home/press/api.distributed.press/data
+    path: /home/press/.distributed-press/data
+    owner: press
+    group: users
+    state: directory
+    mode: '0700'
+
+- name: Create /home/press/.distributed-press directory if doesn't exists
+  file:
+    path: /home/press/.distributed-press/
     owner: press
     group: users
     state: directory
@@ -36,13 +44,13 @@
 
 - name: Check if API config.json exists
   stat:
-    path: /home/press/api.distributed.press/data/config.json
+    path: /home/press/.distributed-press/config.json
   register: config_exists
 
-- name: Copy config.json /home/press/api.distributed.press/
+- name: Copy config.json /home/press/.distributed-press/
   template:
     src: config.json
-    dest: /home/press/api.distributed.press/data/config.json
+    dest: /home/press/.distributed-press/config.json
     owner: press
     group: users
     mode: 0600
@@ -59,6 +67,34 @@
   shell: npm install
   args:
     chdir: /home/press/api.distributed.press/backend
+
+- name: Install Distributed Pinning Services using npm
+  become_user: press
+  shell: npm install
+  args:
+    chdir: /home/press/api.distributed.press/pinning-services
+
+- name: Create /home/press/.distributed-press directory if doesn't exists
+  file:
+    path: /home/press/.distributed-press/data/compost
+    owner: press
+    group: users
+    state: directory
+    mode: '0700'
+
+- name: Check if COMPOST config.json exists
+  stat:
+    path: /home/press/.distributed-press/data/compost/config.json
+  register: compost_config_exists
+
+- name: Install COMPOST config if doesn't exists
+  template:
+    src: compost-config.json
+    dest: /home/press/.distributed-press/data/compost/config.json
+    owner: press
+    group: users
+    mode: 0600
+  when: compost_config_exists.stat.exists == false
 
 - name: Install distributed-api systemd service
   template:
