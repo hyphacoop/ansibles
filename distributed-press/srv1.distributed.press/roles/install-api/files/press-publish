@@ -12,22 +12,26 @@ do
 	fi
 	echo "Project: $project"
 	echo "NGINX webroot: /home/press/.distributed-press/tmp/$project/www/" # using tmp instead of data for testing
-	echo "Getting cert for $project"
-	if [ $staging -eq 1 ]
+	if [ ! -f "/etc/nginx/project-sites/$project" ]
 	then
-		certbot certonly --webroot -w /var/www/html/ -d $project --rsa-key-size 4096 --staging
+		echo "Getting cert for $project"
+		if [ $staging -eq 1 ]
+		then
+			certbot certonly --webroot -w /var/www/html/ -d $project --rsa-key-size 4096 --staging
+		else
+			certbot certonly --webroot -w /var/www/html/ -d $project --rsa-key-size 4096
+		fi
+		echo "Copying template to /etc/nginx/project-sites/$project"
+		cp /etc/nginx/project-sites/template /etc/nginx/project-sites/$project
+		echo "Editing /etc/nginx/project-sites/$project"
+		sed -i -e "s/__project__/$project/g" /etc/nginx/project-sites/$project
+		echo "Enabling $project NGINX config"
+		ln -s /etc/nginx/project-sites/$project /etc/nginx/sites-enabled/$project
+		echo "Reloading NGINX"
+		systemctl reload nginx
 	else
-		certbot certonly --webroot -w /var/www/html/ -d $project --rsa-key-size 4096
+		echo "Project: $project already configured"
 	fi
-	echo "Copying template to /etc/nginx/project-sites/$project"
-	cp /etc/nginx/project-sites/template /etc/nginx/project-sites/$project
-	echo "Editing /etc/nginx/project-sites/$project"
-	sed -i -e "s/__project__/$project/g" /etc/nginx/project-sites/$project
-	echo "Enabling $project NGINX config"
-	ln -s /etc/nginx/project-sites/$project /etc/nginx/sites-enabled/$project
-	echo "Reloading NGINX"
-	systemctl reload nginx
 done
 echo "All done"
 exit 0
-
