@@ -32,7 +32,7 @@
     owner: press
     group: users
     state: directory
-    mode: '0700'
+    mode: '0701'
 
 - name: Create /home/press/.distributed-press directory if doesn't exists
   file:
@@ -40,7 +40,7 @@
     owner: press
     group: users
     state: directory
-    mode: '0700'
+    mode: '0701'
 
 - name: Check if API config.json exists
   stat:
@@ -80,7 +80,7 @@
     owner: press
     group: users
     state: directory
-    mode: '0700'
+    mode: '0701'
 
 - name: Check if COMPOST config.json exists
   stat:
@@ -135,3 +135,9 @@
     name: distributed-pinning
     enabled: yes
     state: started
+
+- name: Install press-publish script
+  copy:
+    src: press-publish
+    dest: /usr/local/sbin/press-publish
+    mode: '755'

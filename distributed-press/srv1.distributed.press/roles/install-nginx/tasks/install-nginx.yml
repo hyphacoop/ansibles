@@ -41,6 +41,14 @@
     creates: /etc/letsencrypt/accounts
   when: not letsencrypt_staging
 
+- name: Create nginx project config directory
+  file:
+    path: /etc/nginx/project-sites
+    owner: root
+    group: root
+    mode: '755'
+    state: directory
+
 - name: Reload nginx
   systemd:
     state: reloaded
