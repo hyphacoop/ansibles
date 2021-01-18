@@ -1,0 +1,87 @@
+server {
+	listen 80;
+	listen [::]:80;
+	server_name __project__;
+	location /.well-known {
+		root /var/www/html;
+	}
+	location / {
+		return 301 https://__project__$request_uri;
+	}
+}
+
+server {
+	listen 443 http2;
+	listen [::]:443 http2;
+	server_name __project__;
+	access_log  /var/log/nginx/__project___access.log;
+	error_log   /var/log/nginx/__project___error.log;
+	root   /home/press/.distributed-press/tmp/__project__/www/;
+	index index.html index.htm;
+	
+	ssl on;
+	server_tokens off;
+	ssl_protocols TLSv1.2 TLSv1.3;
+	ssl_prefer_server_ciphers on;
+	ssl_session_timeout 5m;
+	ssl_session_cache builtin:1000 shared:SSL:10m;
+	add_header Strict-Transport-Security "max-age=63072000;" always;
+	add_header X-Content-Type-Options nosniff;
+	add_header X-Frame-Options DENY;
+	ssl_stapling on;
+	ssl_stapling_verify on;
+	ssl_trusted_certificate /etc/letsencrypt/live/__project__/fullchain.pem;
+	ssl_ciphers 'ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4:!3DES';
+
+	### SSL cert files ###
+	ssl_dhparam          /etc/ssl/dhparam.pem;
+	ssl_certificate      /etc/letsencrypt/live/__project__/fullchain.pem;
+	ssl_certificate_key  /etc/letsencrypt/live/__project__/privkey.pem;
+
+	### Add SSL specific settings here ###
+	keepalive_timeout    60;
+}
+
+server {
+	listen 80;
+	listen [::]:80;
+	server_name api.__project__;
+	location /.well-known {
+		root /var/www/html;
+	}
+	location / {
+		return 301 https://api.__project__$request_uri;
+	}
+}
+
+server {
+	listen 443 http2;
+	listen [::]:443 http2;
+	server_name api.__project__;
+	access_log  /var/log/nginx/api.__project___access.log;
+	error_log   /var/log/nginx/api.__project___error.log;
+	root   /home/press/.distributed-press/tmp/__project__/api/;
+	index index.html index.htm;
+	
+	ssl on;
+	server_tokens off;
+	ssl_protocols TLSv1.2 TLSv1.3;
+	ssl_prefer_server_ciphers on;
+	ssl_session_timeout 5m;
+	ssl_session_cache builtin:1000 shared:SSL:10m;
+	add_header Strict-Transport-Security "max-age=63072000;" always;
+	add_header X-Content-Type-Options nosniff;
+	add_header X-Frame-Options DENY;
+	ssl_stapling on;
+	ssl_stapling_verify on;
+	ssl_trusted_certificate /etc/letsencrypt/live/__project__/fullchain.pem;
+	ssl_ciphers 'ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4:!3DES';
+
+	### SSL cert files ###
+	ssl_dhparam          /etc/ssl/dhparam.pem;
+	ssl_certificate      /etc/letsencrypt/live/__project__/fullchain.pem;
+	ssl_certificate_key  /etc/letsencrypt/live/__project__/privkey.pem;
+
+	### Add SSL specific settings here ###
+	keepalive_timeout    60;
+}

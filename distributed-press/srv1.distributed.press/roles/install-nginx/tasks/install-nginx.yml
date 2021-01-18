@@ -49,6 +49,12 @@
     mode: '755'
     state: directory
 
+- name: Copy nginx template to /etc/nginx/project-sites/template
+  copy:
+    src: template
+    dest: /etc/nginx/project-sites/template
+    mode: '644'
+
 - name: Reload nginx
   systemd:
     state: reloaded

@@ -141,3 +141,10 @@
     src: press-publish
     dest: /usr/local/sbin/press-publish
     mode: '755'
+
+- name: Install crontab for press-publish
+  ansible.builtin.cron:
+    name: press-publish
+    job: /usr/local/sbin/press-publish
+    minute: "*/5"
+    user: root

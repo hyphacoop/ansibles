@@ -12,14 +12,14 @@ do
 	fi
 	echo "Project: $project"
 	echo "NGINX webroot: /home/press/.distributed-press/tmp/$project/www/" # using tmp instead of data for testing
-	if [ ! -f "/etc/nginx/project-sites/$project" ]
+	if [ ! -L "/etc/nginx/sites-enabled/$project" ]
 	then
 		echo "Getting cert for $project"
 		if [ $staging -eq 1 ]
 		then
-			certbot certonly --webroot -w /var/www/html/ -d $project --rsa-key-size 4096 --staging
+			certbot certonly --webroot -w /var/www/html/ -d $project -d api.$project --rsa-key-size 4096 --staging
 		else
-			certbot certonly --webroot -w /var/www/html/ -d $project --rsa-key-size 4096
+			certbot certonly --webroot -w /var/www/html/ -d $project -d api.$project --rsa-key-size 4096
 		fi
 		echo "Copying template to /etc/nginx/project-sites/$project"
 		cp /etc/nginx/project-sites/template /etc/nginx/project-sites/$project
