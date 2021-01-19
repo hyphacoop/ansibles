@@ -2,16 +2,16 @@
 set -e
 
 # Staging?
-staging=1
+staging=0
 
-for project in $(cat /home/press/.distributed-press/config2.json | jq -r '.activeProjects[] .projectDomain') # change to config.json in prod
+for project in $(cat /home/press/.distributed-press/projects.json | jq -r '.active[] .domain')
 do
 	if [ $staging -eq 1 ]
 	then
 		echo "SCRIPT IN STAGING MODE"
 	fi
 	echo "Project: $project"
-	echo "NGINX webroot: /home/press/.distributed-press/tmp/$project/www/" # using tmp instead of data for testing
+	echo "NGINX webroot: /home/press/.distributed-press/data/projects/$project/www/"
 	if [ ! -L "/etc/nginx/sites-enabled/$project" ]
 	then
 		echo "Getting cert for $project"

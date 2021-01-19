@@ -16,7 +16,7 @@ server {
 	server_name __project__;
 	access_log  /var/log/nginx/__project___access.log;
 	error_log   /var/log/nginx/__project___error.log;
-	root   /home/press/.distributed-press/tmp/__project__/www/;
+	root   /home/press/.distributed-press/data/projects/__project__/www/;
 	index index.html index.htm;
 	
 	ssl on;
@@ -60,7 +60,7 @@ server {
 	server_name api.__project__;
 	access_log  /var/log/nginx/api.__project___access.log;
 	error_log   /var/log/nginx/api.__project___error.log;
-	root   /home/press/.distributed-press/tmp/__project__/api/;
+	root   /home/press/.distributed-press/data/projects/__project__/api/;
 	index index.html index.htm;
 	
 	ssl on;
