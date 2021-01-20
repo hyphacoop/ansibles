@@ -16,5 +16,4 @@
     - harden-ssh # harden-ssh from https://github.com/jlu5/ansible-common
     - configure-nginx-api
     - configure-nginx-ipfs
-    - configure-nginx-one
     - configure-nginx-hypercore

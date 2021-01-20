@@ -74,28 +74,6 @@
   args:
     chdir: /home/press/api.distributed.press/pinning-services
 
-- name: Create /home/press/.distributed-press directory if doesn't exists
-  file:
-    path: /home/press/.distributed-press/data/compost
-    owner: press
-    group: users
-    state: directory
-    mode: '0701'
-
-- name: Check if COMPOST config.json exists
-  stat:
-    path: /home/press/.distributed-press/data/compost/config.json
-  register: compost_config_exists
-
-- name: Install COMPOST config if doesn't exists
-  template:
-    src: compost-config.json
-    dest: /home/press/.distributed-press/data/compost/config.json
-    owner: press
-    group: users
-    mode: 0600
-  when: compost_config_exists.stat.exists == false
-
 - name: Install distributed-api systemd service
   template:
     src: distributed-api.service.j2
