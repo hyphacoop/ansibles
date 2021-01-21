@@ -17,6 +17,7 @@
       - nodejs
       - screen
       - git
+      - jq
 
 - name: git clone https://github.com/hyphacoop/api.distributed.press.git
   become_user: press
