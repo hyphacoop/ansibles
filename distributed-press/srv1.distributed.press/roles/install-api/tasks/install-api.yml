@@ -32,7 +32,7 @@
     owner: press
     group: users
     state: directory
-    mode: '0700'
+    mode: '0701'
 
 - name: Create /home/press/.distributed-press directory if doesn't exists
   file:
@@ -40,7 +40,7 @@
     owner: press
     group: users
     state: directory
-    mode: '0700'
+    mode: '0701'
 
 - name: Check if API config.json exists
   stat:
@@ -73,28 +73,6 @@
   shell: npm install
   args:
     chdir: /home/press/api.distributed.press/pinning-services
-
-- name: Create /home/press/.distributed-press directory if doesn't exists
-  file:
-    path: /home/press/.distributed-press/data/compost
-    owner: press
-    group: users
-    state: directory
-    mode: '0700'
-
-- name: Check if COMPOST config.json exists
-  stat:
-    path: /home/press/.distributed-press/data/compost/config.json
-  register: compost_config_exists
-
-- name: Install COMPOST config if doesn't exists
-  template:
-    src: compost-config.json
-    dest: /home/press/.distributed-press/data/compost/config.json
-    owner: press
-    group: users
-    mode: 0600
-  when: compost_config_exists.stat.exists == false
 
 - name: Install distributed-api systemd service
   template:
@@ -135,3 +113,16 @@
     name: distributed-pinning
     enabled: yes
     state: started
+
+- name: Install press-publish script
+  copy:
+    src: press-publish
+    dest: /usr/local/sbin/press-publish
+    mode: '755'
+
+- name: Install crontab for press-publish
+  ansible.builtin.cron:
+    name: press-publish
+    job: /usr/local/sbin/press-publish
+    minute: "*/5"
+    user: root
