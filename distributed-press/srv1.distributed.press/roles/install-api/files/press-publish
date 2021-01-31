@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # Staging?
 staging=0
@@ -20,15 +19,19 @@ do
 			certbot certonly --webroot -w /var/www/html/ -d $project -d api.$project --rsa-key-size 4096 --staging
 		else
 			certbot certonly --webroot -w /var/www/html/ -d $project -d api.$project --rsa-key-size 4096
+			if [ $? != 0 ]
+			then
+				echo "FAILED to get cert for $project"
+			else
+				echo "Copying template to /etc/nginx/project-sites/$project"
+				cp /etc/nginx/project-sites/template /etc/nginx/project-sites/$project
+				echo "Editing /etc/nginx/project-sites/$project"
+				sed -i -e "s/__project__/$project/g" /etc/nginx/project-sites/$project
+				echo "Enabling $project NGINX config"
+				ln -s /etc/nginx/project-sites/$project /etc/nginx/sites-enabled/$project
+				systemctl reload nginx
+			fi
 		fi
-		echo "Copying template to /etc/nginx/project-sites/$project"
-		cp /etc/nginx/project-sites/template /etc/nginx/project-sites/$project
-		echo "Editing /etc/nginx/project-sites/$project"
-		sed -i -e "s/__project__/$project/g" /etc/nginx/project-sites/$project
-		echo "Enabling $project NGINX config"
-		ln -s /etc/nginx/project-sites/$project /etc/nginx/sites-enabled/$project
-		echo "Reloading NGINX"
-		systemctl reload nginx
 	else
 		echo "Project: $project already configured"
 	fi
