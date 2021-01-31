@@ -1,0 +1,6 @@
+[local]
+localhost ansible_connection=local
+
+[loomio]
+loomio ansible_host=loomio.hypha.coop ansible_connection=ssh ansible_ssh_user=sysadmin
+

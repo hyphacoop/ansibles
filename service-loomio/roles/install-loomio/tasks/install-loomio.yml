@@ -1,0 +1,56 @@
+---
+- name: Add Docker repo key
+  apt_key:
+    id: 0EBFCD88
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: Add Docker repo
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+    filename: docker
+    state: present
+
+- name: Install Docker and dependencies 
+  apt:
+    update_cache: true
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - docker-compose
+      - containerd.io
+      - git
+
+- name: git clone loomio-deploy repo
+  git:
+    repo: https://github.com/loomio/loomio-deploy.git
+    dest: /opt/loomio-deploy
+
+- name: Generate Loomio env file
+  shell: ./scripts/create_env {{ site_hostname }} {{ email }}
+  args:
+    chdir: /opt/loomio-deploy
+    creates: /opt/loomio-deploy/env
+
+
+- name: Initialize Loomio database
+  shell: docker-compose up -d db
+  args:
+    chdir: /opt/loomio-deploy
+
+- name: Run Loomio database
+  shell: docker-compose run app rake db:setup
+  args:
+    chdir: /opt/loomio-deploy
+
+- name: Installing crontab for Loomio daily task
+  cron:
+    name: "Loomio daily task"
+    special_time: daily
+    user: root
+    job: "docker exec loomio-worker bundle exec rake loomio:hourly_tasks > ~/rake.log 2>&1"
+
+- name: Run Loomio services
+  shell: docker-compose up -d
+  args:
+    chdir: /opt/loomio-deploy
