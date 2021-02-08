@@ -20,17 +20,6 @@
     protocol: ipv6-icmp
     jump: ACCEPT
 
-- name: ip6tables Allow SSH from ipv6_admin_subs
-  iptables:
-    ip_version: ipv6
-    chain: INPUT
-    protocol: tcp
-    in_interface: eth0
-    source: "{{ item }}"
-    destination_port: "22"
-    jump: ACCEPT
-  with_items: "{{ ipv6_admin_subs }}"
-
 - name: ip6tables Allow nginx TCP 443
   iptables:
     ip_version: ipv6
@@ -125,7 +114,7 @@
     ip_version: ipv4
     chain: INPUT
     protocol: tcp
-    in_interface: eth0
+    in_interface: eth1
     source: "{{ item }}"
     destination_port: "22"
     jump: ACCEPT

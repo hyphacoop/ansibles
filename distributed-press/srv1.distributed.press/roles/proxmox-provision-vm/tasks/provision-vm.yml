@@ -124,6 +124,8 @@
       ciuser: "{{ vm_username }}"
       net0: "virtio={{ vm_mac_0 }},bridge={{ vm_bridge_0 }}"
       ipconfig0: "gw={{ vm_gw4_0 }},gw6={{ vm_gw6_0 }},ip={{ vm_ip4_0 }},ip6={{ vm_ip6_0 }}"
+      net1: "virtio={{ vm_mac_1 }},bridge={{ vm_bridge_1 }}"
+      ipconfig1: "ip={{ vm_ip4_1 }}"
       sshkeys: "{{ lookup('file', vm_sshkey_file ) | urlencode | replace('/','%2F') }}"
       onboot: "1"
   when: not staging_env
