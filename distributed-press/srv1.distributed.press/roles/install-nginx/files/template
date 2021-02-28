@@ -40,6 +40,10 @@ server {
 
 	### Add SSL specific settings here ###
 	keepalive_timeout    60;
+	
+	### Compression ###
+	brotli_static on;
+	gzip_static on;
 }
 
 server {
