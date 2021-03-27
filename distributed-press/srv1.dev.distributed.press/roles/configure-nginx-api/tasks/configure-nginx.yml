@@ -1,0 +1,39 @@
+---
+
+- name: Configure nginx {{ site_hostname }}
+  template:
+    src: vhost.conf.j2
+    dest: /etc/nginx/sites-available/{{ site_hostname }}
+    owner: root
+    group: root
+
+- name: Create /var/www/{{ site_hostname }}
+  file:
+    path: /var/www/{{ site_hostname }}
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Enabling {{ site_hostname }} nginx config
+  file:
+    src: /etc/nginx/sites-available/{{ site_hostname }}
+    dest: /etc/nginx/sites-enabled/{{ site_hostname }}
+    state: link
+
+- name: Get Let's Encrypt Staging Cert
+  command: certbot certonly --webroot -w /var/www/html/ -d {{ site_hostname }} --rsa-key-size 4096 --staging
+  args:
+    creates: /etc/letsencrypt/live/{{ site_hostname }}/fullchain.pem
+  when: letsencrypt_staging|bool
+
+- name: Get Let's Encrypt Cert
+  command: certbot certonly --webroot -w /var/www/html/ -d {{ site_hostname }} --rsa-key-size 4096 
+  args:
+    creates: /etc/letsencrypt/live/{{ site_hostname }}/fullchain.pem
+  when: not letsencrypt_staging|bool
+
+- name: Reload nginx
+  systemd:
+    state: reloaded
+    name: nginx

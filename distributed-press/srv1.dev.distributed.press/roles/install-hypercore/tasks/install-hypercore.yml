@@ -1,0 +1,46 @@
+---
+- name: Add nodejs repo key
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    state: present
+
+- name: Add nodejs repo
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_15.x buster main"
+    filename: nodesource
+    state: present
+
+- name: Install nodejs
+  apt:
+    update_cache: true
+    pkg:
+      - nodejs
+  register: nodejs
+
+- name: Check if dat-store is installed
+  stat:
+    path: /usr/bin/dat-store
+  register: dat_store_installed
+
+- name: Install npm dat-store
+  npm:
+    name: dat-store
+    global: yes
+    state: latest
+  when: dat_store_installed.stat.exists == false
+
+- name: Install dat-store systemd service
+  template:
+    src: dat-store.service.j2
+    dest: /etc/systemd/system/dat-store.service
+    mode: 0644
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start dat-store service
+  systemd:
+    name: dat-store
+    enabled: yes
+    state: started

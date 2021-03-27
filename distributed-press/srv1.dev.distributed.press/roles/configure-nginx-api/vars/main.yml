@@ -1,0 +1,3 @@
+---
+letsencrypt_staging: false # If true we will use Let's Encrypt staging certs
+site_hostname: api.dev.distributed.press

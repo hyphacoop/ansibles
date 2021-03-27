@@ -1,0 +1,129 @@
+---
+- name: Add nodejs repo key
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    state: present
+
+- name: Add nodejs repo
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_15.x buster main"
+    filename: nodesource
+    state: present
+
+- name: Install nodejs
+  apt:
+    update_cache: true
+    pkg:
+      - nodejs
+      - screen
+      - git
+      - jq
+
+- name: git clone https://github.com/hyphacoop/api.distributed.press.git
+  become_user: press
+  git:
+    repo: 'https://github.com/hyphacoop/api.distributed.press.git'
+    dest: '/home/press/api.distributed.press'
+    clone: yes
+    update: no
+
+- name: Create Data directory if doesn't exists
+  file:
+    path: /home/press/.distributed-press/data
+    owner: press
+    group: users
+    state: directory
+    mode: '0701'
+
+- name: Create /home/press/.distributed-press directory if doesn't exists
+  file:
+    path: /home/press/.distributed-press/
+    owner: press
+    group: users
+    state: directory
+    mode: '0701'
+
+- name: Check if API config.json exists
+  stat:
+    path: /home/press/.distributed-press/config.json
+  register: config_exists
+
+- name: Copy config.json /home/press/.distributed-press/
+  template:
+    src: config.json
+    dest: /home/press/.distributed-press/config.json
+    owner: press
+    group: users
+    mode: 0600
+  when: config_exists.stat.exists == false
+
+- name: Install Distributed API using npm
+  become_user: press
+  shell: npm install
+  args:
+    chdir: /home/press/api.distributed.press/api
+
+- name: Install Distributed Backend using npm
+  become_user: press
+  shell: npm install
+  args:
+    chdir: /home/press/api.distributed.press/backend
+
+- name: Install Distributed Pinning Services using npm
+  become_user: press
+  shell: npm install
+  args:
+    chdir: /home/press/api.distributed.press/pinning-services
+
+- name: Install distributed-api systemd service
+  template:
+    src: distributed-api.service.j2
+    dest: /etc/systemd/system/distributed-api.service
+    mode: 0644
+
+- name: Install distributed-backend systemd service
+  template:
+    src: distributed-backend.service.j2
+    dest: /etc/systemd/system/distributed-backend.service
+    mode: 0644
+
+- name: Install distributed-pinning systemd service
+  template:
+    src: distributed-pinning.service.j2
+    dest: /etc/systemd/system/distributed-pinning.service
+    mode: 0644
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start distributed-api service
+  systemd:
+    name: distributed-api
+    enabled: yes
+    state: started
+
+- name: Enable and start distributed-backend service
+  systemd:
+    name: distributed-backend
+    enabled: yes
+    state: started
+
+- name: Enable and start distributed-pinning service
+  systemd:
+    name: distributed-pinning
+    enabled: yes
+    state: started
+
+- name: Install press-publish script
+  copy:
+    src: press-publish
+    dest: /usr/local/sbin/press-publish
+    mode: '755'
+
+- name: Install crontab for press-publish
+  ansible.builtin.cron:
+    name: press-publish
+    job: /usr/local/sbin/press-publish
+    minute: "*/5"
+    user: root

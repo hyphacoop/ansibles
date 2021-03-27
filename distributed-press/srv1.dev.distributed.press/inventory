@@ -1,0 +1,6 @@
+[local]
+localhost ansible_connection=local
+
+[webserver]
+srv1 ansible_host=198.50.215.13 ansible_connection=ssh ansible_ssh_user=sysadmin
+
