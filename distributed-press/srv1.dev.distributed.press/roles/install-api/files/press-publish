@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Staging?
+staging=0
+
+for project in $(cat /home/press/.distributed-press/projects.json | jq -r '.active[] .domain')
+do
+	if [ $staging -eq 1 ]
+	then
+		echo "SCRIPT IN STAGING MODE"
+	fi
+	echo "Project: $project"
+	echo "NGINX webroot: /home/press/.distributed-press/data/projects/$project/www/"
+	if [ ! -L "/etc/nginx/sites-enabled/$project" ]
+	then
+		echo "Getting cert for $project"
+		if [ $staging -eq 1 ]
+		then
+			certbot certonly --webroot -w /var/www/html/ -d $project -d api.$project --rsa-key-size 4096 --staging
+		else
+			certbot certonly --webroot -w /var/www/html/ -d $project -d api.$project --rsa-key-size 4096
+			if [ $? != 0 ]
+			then
+				echo "FAILED to get cert for $project"
+			else
+				echo "Copying template to /etc/nginx/project-sites/$project"
+				cp /etc/nginx/project-sites/template /etc/nginx/project-sites/$project
+				echo "Editing /etc/nginx/project-sites/$project"
+				sed -i -e "s/__project__/$project/g" /etc/nginx/project-sites/$project
+				echo "Enabling $project NGINX config"
+				ln -s /etc/nginx/project-sites/$project /etc/nginx/sites-enabled/$project
+				systemctl reload nginx
+			fi
+		fi
+	else
+		echo "Project: $project already configured"
+	fi
+done
+echo "All done"
+exit 0
