@@ -1,0 +1,38 @@
+---
+- name: Set staging vars
+  set_fact:
+    site_hostname: "{{ site_hostname_staging }}"
+    webserver_ipv4: "{{ webserver_ipv4_staging }}"
+    webserver_ipv6: "{{ webserver_ipv6_staging }}"
+    site_backend: "{{ site_backend_staging }}"
+  when: staging_env|bool
+
+- name: Configure nginx {{ site_hostname }}
+  template:
+    src: hypha-testnet.hypha.coop.j2
+    dest: /etc/nginx/sites-available/{{ site_hostname }}
+    owner: root
+    group: root
+
+- name: Enabling {{ site_hostname }} nginx config
+  file:
+    src: /etc/nginx/sites-available/{{ site_hostname }}
+    dest: /etc/nginx/sites-enabled/{{ site_hostname }}
+    state: link
+
+- name: Get Let's Encrypt Staging Cert
+  command: certbot certonly --webroot -w /var/www/html/ -d {{ site_hostname }} --rsa-key-size 4096 --staging
+  args:
+    creates: /etc/letsencrypt/live/{{ site_hostname }}/fullchain.pem
+  when: staging_env|bool
+
+- name: Get Let's Encrypt Cert
+  command: certbot certonly --webroot -w /var/www/html/ -d {{ site_hostname }} --rsa-key-size 4096 
+  args:
+    creates: /etc/letsencrypt/live/{{ site_hostname }}/fullchain.pem
+  when: not staging_env|bool
+
+- name: Reload nginx
+  systemd:
+    state: reloaded
+    name: nginx
