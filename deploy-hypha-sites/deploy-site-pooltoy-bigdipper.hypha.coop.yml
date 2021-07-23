@@ -1,0 +1,5 @@
+---
+- hosts: webserver
+  become: yes
+  roles:
+    - site-pooltoy-bigdipper.hypha.coop-config-proxy

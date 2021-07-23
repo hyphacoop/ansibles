@@ -1,0 +1,10 @@
+---
+staging_env: false # If true we will use Let's Encrypt staging certs, put in staging network
+site_hostname: pooltoy-bigdipper.hypha.coop # Without the www part
+site_hostname_staging: pooltoy-bigdipper.staging.hypha.coop # Without the www part
+site_backend: '10.0.1.9'
+site_backend_staging: '10.0.2.9'
+webserver_ipv4: '198.50.215.0' # IPv4 of the reverse proxy
+webserver_ipv6: '2607:5300:60:749e:4879:7068:6157:4542' # IPv6 of the reverse proxy
+webserver_ipv4_staging: '198.50.215.2' # IPv4 of the staging reverse proxy
+webserver_ipv6_staging: '2607:5300:60:749e:4879:7068:6153:5447' # IPv6 of the staging reverse proxy
