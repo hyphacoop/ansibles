@@ -1,0 +1,13 @@
+---
+- hosts: local
+  roles:
+    - proxmox-provision-vm
+
+- hosts: loomio
+  become: yes
+  roles:
+    - common
+    - install-loomio
+    - firewall
+    - unattended-upgrades # Unattended-Upgrades role from https://github.com/jnv/ansible-role-unattended-upgrades
+    - harden-ssh # harden-ssh from https://github.com/jlu5/ansible-common
