@@ -6,3 +6,6 @@ ipv6_admin_subs:
 # IPv4 admin IPs
 ipv4_admin_subs:
   - 10.0.1.2/32
+
+interface_public: eth0
+interface_private: eth1

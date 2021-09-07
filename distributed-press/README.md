@@ -30,6 +30,7 @@ test-server ansible_host=192.168.1.5  ansible_ssh_user=user
 Sample config:
 ```
 ---
+domain_name: distributedpress.local
 dpress_config_name: blank
 ipv6_admin_subs:
   - ::/0
@@ -39,7 +40,8 @@ dat_username: nopassword
 dat_password: nopassword
 letsencrypt_enable: false
 letsencrypt_staging: false
-domain_name: distributedpress.local
+interface_public: enp0s3
+interface_private: enp0s3
 ```
 
 4. Run ansible playbook
@@ -59,3 +61,6 @@ domain_name: distributedpress.local
 **letsencrypt_enable:** Generate Lets Encrypt certificate (`true`) or use Self Signed certificate (`false`). Running localy you should set this to false. `true` if device has a real-world domain server and accessable via the internet.
 
 **letsencrypt_staging:** When using Lets Encrypt, create staging certificate (true) or production certificate (false). Staging certificate will not pass browser checks and will throw an error. Production certificates are throttled.
+
+**interface_public**: Interface that is facing the internet. 
+**interface_private**: Interface that is facing the management network. 

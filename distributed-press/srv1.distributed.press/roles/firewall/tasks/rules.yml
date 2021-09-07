@@ -25,7 +25,7 @@
     ip_version: ipv6
     chain: INPUT
     protocol: tcp
-    in_interface: eth0
+    in_interface: {{ interface_public }}
     destination_port: "443"
     jump: ACCEPT
 
@@ -34,7 +34,7 @@
     ip_version: ipv6
     chain: INPUT
     protocol: tcp
-    in_interface: eth0
+    in_interface: {{ interface_public }}
     destination_port: "80"
     jump: ACCEPT
 
@@ -43,7 +43,7 @@
     ip_version: ipv6
     chain: INPUT
     protocol: tcp
-    in_interface: eth0
+    in_interface: {{ interface_public }}
     destination_port: "4001"
     jump: ACCEPT
 
@@ -52,7 +52,7 @@
     ip_version: ipv6
     chain: INPUT
     protocol: tcp
-    in_interface: eth0
+    in_interface: {{ interface_public }}
     destination_port: "42666"
     jump: ACCEPT
 
@@ -61,7 +61,7 @@
     ip_version: ipv6
     chain: INPUT
     protocol: udp
-    in_interface: eth0
+    in_interface: {{ interface_public }}
     destination_port: "42666"
     jump: ACCEPT
 
@@ -114,7 +114,7 @@
     ip_version: ipv4
     chain: INPUT
     protocol: tcp
-    in_interface: eth1
+    in_interface: {{ interface_private }}
     source: "{{ item }}"
     destination_port: "22"
     jump: ACCEPT
@@ -125,7 +125,7 @@
     ip_version: ipv4
     chain: INPUT
     protocol: tcp
-    in_interface: eth0
+    in_interface: {{ interface_public }}
     destination_port: "443"
     jump: ACCEPT
 
@@ -134,7 +134,7 @@
     ip_version: ipv4
     chain: INPUT
     protocol: tcp
-    in_interface: eth0
+    in_interface: {{ interface_public }}
     destination_port: "80"
     jump: ACCEPT
 
@@ -143,7 +143,7 @@
     ip_version: ipv4
     chain: INPUT
     protocol: tcp
-    in_interface: eth0
+    in_interface: {{ interface_public }}
     destination_port: "4001"
     jump: ACCEPT
 
@@ -152,7 +152,7 @@
     ip_version: ipv4
     chain: INPUT
     protocol: tcp
-    in_interface: eth0
+    in_interface: {{ interface_public }}
     destination_port: "42666"
     jump: ACCEPT
 
@@ -161,7 +161,7 @@
     ip_version: ipv4
     chain: INPUT
     protocol: udp
-    in_interface: eth0
+    in_interface: {{ interface_public }}
     destination_port: "42666"
     jump: ACCEPT
 
