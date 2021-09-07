@@ -25,13 +25,21 @@
   command: certbot certonly --webroot -w /var/www/html/ -d {{ site_hostname }} --rsa-key-size 4096 --staging
   args:
     creates: /etc/letsencrypt/live/{{ site_hostname }}/fullchain.pem
-  when: letsencrypt_staging|bool
+  when:
+    letsencrypt_staging|bool and
+    letsencrypt_enable|bool
 
 - name: Get Let's Encrypt Cert
   command: certbot certonly --webroot -w /var/www/html/ -d {{ site_hostname }} --rsa-key-size 4096 
   args:
     creates: /etc/letsencrypt/live/{{ site_hostname }}/fullchain.pem
-  when: not letsencrypt_staging|bool
+  when:
+    not letsencrypt_staging|bool and
+    letsencrypt_enable|bool
+
+- name: Generate Self Signed
+  include_tasks: ssl_selfsigned.yml
+  when: not letsencrypt_enable|bool
 
 - name: Reload nginx
   systemd:
