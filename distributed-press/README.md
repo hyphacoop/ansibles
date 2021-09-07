@@ -64,3 +64,29 @@ interface_private: enp0s3
 
 **interface_public**: Interface that is facing the internet. 
 **interface_private**: Interface that is facing the management network. 
+
+# Running a localy
+
+If you are running this local you can hard code your fake domain name using the `hosts` file. 
+
+The hosts file is located
+
+Linux: `/etc/hosts`
+Windows `c:\windows\system32\drivers\etc\hosts`
+
+Add the following entries int your hosts file
+
+```
+<ipaddress> <domainname>
+<ipaddress> api.<domainname>
+<ipaddress> ipfs.<domainname>
+<ipaddress> hyper.<domainname>
+```
+
+For examample for ip `192.168.1.5` and domain name `distributedpress.local`
+
+```
+192.168.1.5 api.distributedpress.local
+192.168.1.5 ipfs.distributedpress.local
+192.168.1.5 hyper.distributedpress.local
+```
