@@ -6,7 +6,7 @@
 
 - name: Add nodejs repo
   apt_repository:
-    repo: "deb https://deb.nodesource.com/node_15.x buster main"
+    repo: "deb https://deb.nodesource.com/node_15.x bullseye main"
     filename: nodesource
     state: present
 

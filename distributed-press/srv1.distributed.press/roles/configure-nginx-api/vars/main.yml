@@ -1,2 +1,2 @@
 ---
-site_hostname: api.distributed.press
+site_hostname: api.{{ domain_name }}

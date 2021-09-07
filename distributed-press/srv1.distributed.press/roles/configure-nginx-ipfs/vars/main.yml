@@ -1,2 +1,2 @@
 ---
-site_hostname: ipfs.distributed.press
+site_hostname: ipfs.{{ domain_name }}

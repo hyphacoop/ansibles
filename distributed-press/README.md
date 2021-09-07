@@ -39,16 +39,18 @@ dat_username: nopassword
 dat_password: nopassword
 letsencrypt_enable: false
 letsencrypt_staging: false
+domain_name: distributedpress.local
 ```
 
 4. Run ansible playbook
 
-`ansible-playbook -i inventory -limit servername deploy-server.yml`
+`ansible-playbook -i inventory --limit <servername> deploy-server.yml`
 
 # Configuration
 
+**domain_name:** Name of top level domain. Will prepent api,ipfs,hyper  as needed
 
-**dpress_config_name**:  Filename of configuration file for the API. `config<dpress_config_name>.json`. `blank` will create an empty json file.
+**dpress_config_name:**  Filename of configuration file for the API. `config<dpress_config_name>.json`. `blank` will create an empty json file.
 
 **ipv6_admin_subs**,**ipv4_admin_subs**: IP subjects that you will be allowed to SSH into from.
 
