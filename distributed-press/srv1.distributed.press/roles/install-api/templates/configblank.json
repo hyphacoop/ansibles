@@ -1,1 +1,14 @@
-{}
+{
+  "dataDirectory": "/home/press/",
+  "digitalOceanAccessToken": "",
+  "etherscanApiKey": "",
+  "httpIpv4Address": "127.0.0.1",
+  "httpIpv6Address": "127.0.0.1",
+  "datStore": {
+    "server": "http://127.0.0.1:3472",
+    "username": "{{ dat_username }}",
+    "password": "{{ dat_password }}"
+  },
+  "ipfsServer": "/ip4/127.0.0.1/tcp/5001",
+  "dev": {}
+}
