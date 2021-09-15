@@ -6,7 +6,7 @@
 
 - name: Add nodejs repo
   apt_repository:
-    repo: "deb https://deb.nodesource.com/node_15.x buster main"
+    repo: "deb https://deb.nodesource.com/node_15.x bullseye main"
     filename: nodesource
     state: present
 
@@ -50,7 +50,7 @@
 
 - name: Copy config.json /home/press/.distributed-press/
   template:
-    src: config.json
+    src: config{{ dpress_config_name }}.json
     dest: /home/press/.distributed-press/config.json
     owner: press
     group: users

@@ -33,13 +33,22 @@
   command: certbot register --email {{ letsencrypt_email }} --agree-tos -n --staging
   args:
     creates: /etc/letsencrypt/accounts
-  when: letsencrypt_staging
+  when:
+    letsencrypt_staging|bool and
+    letsencrypt_enable|bool
+
 
 - name: Register Let's Encrypt Production Account
   command: certbot register --email {{ letsencrypt_email }} --agree-tos -n
   args:
     creates: /etc/letsencrypt/accounts
-  when: not letsencrypt_staging
+  when:
+    not letsencrypt_staging|bool and
+    letsencrypt_enable|bool
+
+- name: Generate Self Signed
+  include_tasks: ssl_selfsigned.yml
+  when: not letsencrypt_enable|bool
 
 - name: Create nginx project config directory
   file:

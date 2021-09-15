@@ -1,0 +1,22 @@
+---
+- name: Creates directory
+  file:
+    path: /etc/letsencrypt/live/{{ site_hostname }}
+    state: directory
+
+- name: Generate an OpenSSL private key.
+  openssl_privatekey:
+    path: /etc/letsencrypt/live/{{ site_hostname }}/privkey.pem
+
+- name: Generate an OpenSSL CSR.
+  openssl_csr:
+    path: /etc/letsencrypt/live/{{ site_hostname }}/request.csr
+    privatekey_path: /etc/letsencrypt/live/{{ site_hostname }}/privkey.pem
+    common_name: "{{ site_hostname }}"
+
+- name: Self Sign Cert
+  openssl_certificate:
+    path: /etc/letsencrypt/live/{{ site_hostname }}/fullchain.pem
+    privatekey_path: /etc/letsencrypt/live/{{ site_hostname }}/privkey.pem
+    csr_path: /etc/letsencrypt/live/{{ site_hostname }}/request.csr
+    provider: selfsigned
