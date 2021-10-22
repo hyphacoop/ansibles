@@ -1,0 +1,3 @@
+[submodule "service-mailman/collections/hypha/common"]
+	path = service-mailman/collections/hypha/common
+	url = http://github.com/hyphacoop/ansible-common
