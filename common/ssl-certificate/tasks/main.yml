@@ -1,0 +1,8 @@
+---
+- name: Generate Self Signed
+  include_tasks: ssl-selfsigned.yml
+  when: not letsencrypt_enable|bool
+
+- name: Generate Self Signed
+  include_tasks: ssl-letsencrypt.yml
+  when: letsencrypt_enable|bool

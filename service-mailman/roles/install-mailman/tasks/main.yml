@@ -1,5 +1,7 @@
 ---
 - include_tasks: install-apache.yml
+- import_role: 
+    name: ssl-certificate
 - include_tasks: install-mailman.yml
 - include_tasks: install-postfix.yml
 - include_tasks: configure-services.yml
