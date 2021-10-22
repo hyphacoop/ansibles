@@ -13,11 +13,13 @@
     storage: "{{ storage }}"
     format: qcow2
   register: clone_vm
+  delegate_to: localhost
 
 - name: Waiting for Clone to finish
   pause:
     seconds: 10
   when: clone_vm.changed
+  delegate_to: localhost
 
 - name: Configure VM
   proxmox_kvm:
@@ -31,6 +33,7 @@
     cpuunits: "{{ vm_cpuunits }}"
     memory: "{{ vm_ram }}"
     update: true
+  delegate_to: localhost
 
 - name: Auth using API
   uri:
@@ -42,6 +45,7 @@
       username: "{{ api_user }}"
       password: "{{ api_password }}"
   register: auth
+  delegate_to: localhost
 
 - name: Resize disk using API
   uri:
@@ -58,6 +62,7 @@
   register: vm_resize
   retries: 10
   until: vm_resize is success
+  delegate_to: localhost
 
 - name: Set cloud-init config using API
   uri:
@@ -76,6 +81,7 @@
       ipconfig0: "gw={{ vm_gw4_0 }},gw6={{ vm_gw6_0 }},ip={{ vm_ip4_0 }},ip6={{ vm_ip6_0 }}"
       sshkeys: "{{ lookup('file', vm_sshkey_file ) | urlencode | replace('/','%2F') }}"
       onboot: "1"
+  delegate_to: localhost
 
 - name: Start VM
   proxmox_kvm:
@@ -86,6 +92,7 @@
     name: "{{ vm_name }}"
     state: started
   register: start_vm
+  delegate_to: localhost
 
 - name: Wait for SSH to be ready {{ vm_name }}
   wait_for:
@@ -94,3 +101,4 @@
     search_regex: OpenSSH
     delay: 10
   when: start_vm.changed
+  delegate_to: localhost

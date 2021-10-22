@@ -1,5 +1,6 @@
 ---
-- hosts: local
+- hosts: mailman
+  gather_facts: no
   roles:
     - proxmox-provision-vm
 

@@ -13,8 +13,14 @@
   command: certbot register --email {{ letsencrypt_email }} --agree-tos -n
   args:
     creates: /etc/letsencrypt/accounts
+  when:
+    letsencrypt_staging|bool and
+    letsencrypt_enable|bool
 
 - name: Get Let's Encrypt Cert
   command: certbot certonly --webroot -w /var/www/html/ -d {{ site_hostname }} -d {{ site_hostname }} --rsa-key-size 4096
   args:
     creates: /etc/letsencrypt/live/{{ site_hostname }}/fullchain.pem
+  when:
+    letsencrypt_staging|bool and
+    letsencrypt_enable|bool

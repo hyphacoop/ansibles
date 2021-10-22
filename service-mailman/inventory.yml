@@ -1,0 +1,11 @@
+---
+all:
+  children:
+    mailman:
+      hosts:
+        localhost:
+          ansible_connection: local
+        lists.hypha.coop:
+          ansible_connection: ssh
+          ansible_ssh_user: sysadmin
+
