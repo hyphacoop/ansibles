@@ -1,0 +1,12 @@
+---
+- name: Update the /etc/hosts file with node name
+  become: true
+  become_user: root
+  lineinfile:
+    dest: "/etc/hosts"
+    regexp: ".*\t{{ site_hostname }}"
+    line: "{{ vm_ip4_0 | ipaddr('address') }}\t{{ site_hostname }}"
+    state: present
+    backup: yes
+  delegate_to: localhost
+  when: hostname_method == 'local'

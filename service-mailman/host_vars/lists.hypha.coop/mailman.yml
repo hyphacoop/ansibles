@@ -1,3 +1,7 @@
 ---
+hostname_method: local
 letsencrypt_enable: false
 letsencrypt_staging: true
+letsencrypt_email: infra@hypha.coop
+site_hostname: lists.hypha.coop
+

@@ -2,6 +2,7 @@
 - hosts: mailman
   gather_facts: no
   roles:
+    - hostname
     - proxmox-provision-vm
 
 - hosts: mailman
