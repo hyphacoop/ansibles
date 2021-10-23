@@ -1,6 +1,8 @@
 ---
-- hosts: local
+- hosts: loomio
+  gather_facts: no
   roles:
+    - hostname
     - proxmox-provision-vm
 
 - hosts: loomio
